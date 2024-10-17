@@ -7,137 +7,116 @@ import java.sql.*;
 import java.util.Random;
 
 public class signup extends JFrame implements ActionListener {
-    JButton submitButton;
-    JButton resetButton;
-    JTextField namefield;
-    JTextField emailfield;
-    JTextField mobilefield;  // New mobile field
+    JButton submitButton, resetButton, backButton, closeButton;
+    JTextField namefield, emailfield, mobilefield;
     JComboBox<String> genderComboBox;
-    JPasswordField passwordfield;
-    JPasswordField confirmfield;
+    JPasswordField passwordfield, confirmfield;
+    private Color accentColor = new Color(230, 126, 34);
+    private Color dangerColor = new Color(231, 76, 60);
+    private Color focusColor = new Color(46, 204, 113); // Green when focused
 
-    public signup() {
+    public signup(){
+        // Back Button
+        backButton = createStyledButton("Back", accentColor);
+        backButton.setBounds(10, 15, 80, 35);
+        backButton.setFont(new Font(Font.SERIF, Font.BOLD, 14));
+        backButton.setBackground(Color.WHITE);
+        backButton.setBorder(new RoundedBorder(10));
+        backButton.addActionListener(this);
+
+        // Close Button
+        closeButton = createStyledButton("Close", dangerColor);
+        closeButton.setBounds(410, 15, 80, 35);
+        closeButton.setFont(new Font(Font.SERIF, Font.BOLD, 14));
+        closeButton.setBackground(Color.WHITE);
+        closeButton.setBorder(new RoundedBorder(10));
+        closeButton.addActionListener(this);
+
         // Header Label
-        JLabel pgroom = new JLabel();
-        pgroom.setBounds(0, 0, 400, 40);
-        pgroom.setBackground(Color.CYAN);
+        JLabel pgroom = new JLabel("PG ROOM", SwingConstants.CENTER);
+        pgroom.setBounds(0, 0, 500, 60);
+        pgroom.setFont(new Font(Font.SERIF, Font.BOLD, 36));
         pgroom.setOpaque(true);
-        pgroom.setText("PG ROOM");
-        pgroom.setFont(new Font(Font.SERIF, Font.BOLD, 30));
-        pgroom.setHorizontalAlignment(JLabel.CENTER);
 
-        // Sign Up Label
-        JLabel signupicon = new JLabel();
-        signupicon.setBounds(0, 50, 400, 30);
-        signupicon.setBackground(Color.CYAN);
-        signupicon.setOpaque(true);
-        signupicon.setText("Sign Up");
-        signupicon.setFont(new Font(Font.SERIF, Font.BOLD, 20));
-        signupicon.setBorder(BorderFactory.createEmptyBorder(0, 20, 0, 0));
+        // Name Label and Field
+        JLabel fullnameLabel = new JLabel("Name:");
+        fullnameLabel.setBounds(30, 130, 120, 30);
+        fullnameLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Name Label
-        JLabel fullnameLabel = new JLabel();
-        fullnameLabel.setBounds(20, 90, 100, 30);
-        fullnameLabel.setText("Name:");
-        fullnameLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+        namefield = createModernTextField("Enter your name");
+        namefield.setBounds(165, 130, 300, 30);
 
-        // Name Field with rounded border
-        namefield = new JTextField();
-        namefield.setBounds(150, 90, 230, 30);
-        namefield.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        namefield.setBorder(new RoundedBorder(10)); // Rounded border
+        // Email Label and Field
+        JLabel emailLabel = new JLabel("Email:");
+        emailLabel.setBounds(30, 180, 120, 30);
+        emailLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Email Label
-        JLabel emailLabel = new JLabel();
-        emailLabel.setBounds(20, 130, 100, 30);
-        emailLabel.setText("Email:");
-        emailLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+        emailfield = createModernTextField("Enter your email");
+        emailfield.setBounds(165, 180, 300, 30);
 
-        // Email Field with rounded border
-        emailfield = new JTextField();
-        emailfield.setBounds(150, 130, 230, 30);
-        emailfield.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        emailfield.setBorder(new RoundedBorder(10)); // Rounded border
+        // Mobile Label and Field
+        JLabel mobileLabel = new JLabel("Mobile:");
+        mobileLabel.setBounds(30, 230, 120, 30);
+        mobileLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Mobile Number Label
-        JLabel mobileLabel = new JLabel();
-        mobileLabel.setBounds(20, 170, 100, 30);
-        mobileLabel.setText("Mobile:");
-        mobileLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+        mobilefield = createModernTextField("Enter your mobile number");
+        mobilefield.setBounds(165, 230, 300, 30);
 
-        // Mobile Number Field with rounded border
-        mobilefield = new JTextField();
-        mobilefield.setBounds(150, 170, 230, 30);
-        mobilefield.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        mobilefield.setBorder(new RoundedBorder(10)); // Rounded border
+        // Gender Label and ComboBox
+        JLabel genderLabel = new JLabel("Gender:");
+        genderLabel.setBounds(30, 280, 120, 30);
+        genderLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Gender Label
-        JLabel genderLabel = new JLabel();
-        genderLabel.setBounds(20, 210, 100, 30);
-        genderLabel.setText("Gender:");
-        genderLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
-
-        // Gender ComboBox with rounded border
         String[] genders = {"Select", "Male", "Female", "Other"};
         genderComboBox = new JComboBox<>(genders);
-        genderComboBox.setBounds(150, 210, 230, 30);
+        genderComboBox.setBounds(165, 280, 300, 30);
         genderComboBox.setBackground(Color.white);
-        genderComboBox.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        genderComboBox.setBorder(new RoundedBorder(10)); // Rounded border
+        genderComboBox.setFont(new Font(Font.SERIF, Font.PLAIN, 16));
+        genderComboBox.setBorder(new RoundedBorder(10));
 
-        // Password Label
-        JLabel passwordLabel = new JLabel();
-        passwordLabel.setBounds(20, 250, 120, 30);
-        passwordLabel.setText("Password:");
-        passwordLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+        // Password Label and Field
+        JLabel passwordLabel = new JLabel("Password:");
+        passwordLabel.setBounds(30, 330, 120, 30);
+        passwordLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Password Field with rounded border
-        passwordfield = new JPasswordField();
-        passwordfield.setBounds(150, 250, 230, 30);
-        passwordfield.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        passwordfield.setBorder(new RoundedBorder(10)); // Rounded border
+        passwordfield = createModernPasswordField();
+        passwordfield.setBounds(165, 330, 300, 30);
 
-        // Confirm Password Label
-        JLabel confirmLabel = new JLabel();
-        confirmLabel.setBounds(20, 290, 150, 30);
-        confirmLabel.setText("Confirm Password:");
-        confirmLabel.setFont(new Font(Font.SERIF, Font.BOLD, 15));
+        // Confirm Password Label and Field
+        JLabel confirmLabel = new JLabel("Confirm Password:");
+        confirmLabel.setBounds(30, 380, 150, 30);
+        confirmLabel.setFont(new Font(Font.SERIF, Font.BOLD, 16));
 
-        // Confirm Password Field with rounded border
-        confirmfield = new JPasswordField();
-        confirmfield.setBounds(150, 290, 230, 30);
-        confirmfield.setFont(new Font(Font.SERIF, Font.PLAIN, 14));
-        confirmfield.setBorder(new RoundedBorder(10)); // Rounded border
+        confirmfield = createModernPasswordField();
+        confirmfield.setBounds(165, 380, 300, 30);
 
         // Buttons
-        submitButton = new JButton("Sign in");
-        resetButton = new JButton("Reset");
-        submitButton.setBounds(100, 330, 100, 30);
-        resetButton.setBounds(220, 330, 100, 30);
-        resetButton.setBorder(new RoundedBorder(10));
-        submitButton.setBorder(new RoundedBorder(10));
-        submitButton.setBackground(Color.WHITE);
-        resetButton.setBackground(Color.WHITE);
+        submitButton = createStyledButton("Sign Up", accentColor);
+        resetButton = createStyledButton("Reset", dangerColor);
+        submitButton.setBounds(160, 440, 120, 40);
+        resetButton.setBounds(340, 440, 120, 40);
 
         submitButton.addActionListener(this);
         resetButton.addActionListener(this);
 
-        // Set up the frame
+        // Frame setup
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setSize(400, 400);  // Increased height to accommodate the mobile number field
+        this.setSize(500, 550);
         this.setTitle("PG ROOM");
         this.setLayout(null);
         this.setResizable(false);
 
-        // Add components to frame
+
+        // Add components
+        this.add(backButton);
+        this.add(closeButton);
         this.add(pgroom);
-        this.add(signupicon);
         this.add(fullnameLabel);
         this.add(namefield);
         this.add(emailLabel);
         this.add(emailfield);
         this.add(mobileLabel);
-        this.add(mobilefield);   // Added mobile number field
+        this.add(mobilefield);
         this.add(genderLabel);
         this.add(genderComboBox);
         this.add(passwordLabel);
@@ -146,15 +125,113 @@ public class signup extends JFrame implements ActionListener {
         this.add(confirmfield);
         this.add(submitButton);
         this.add(resetButton);
-
-        // Set frame icon
-        ImageIcon pgimage = new ImageIcon("pg.png");
-        this.setIconImage(pgimage.getImage());
-
+        
+        // Center on screen
+        this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
+    private JTextField createModernTextField(String placeholder) {
+        JTextField field = new JTextField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getText().isEmpty() && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(Color.GRAY);  // Placeholder color
+                    g2.drawString(placeholder, 10, 20);  // Placeholder position
+                }
+            }
+        };
 
-    // Action Listener
+        field.setFont(new Font("Arial", Font.PLAIN, 16));
+        field.setForeground(Color.BLACK);
+        field.setBorder(new RoundedBorder(10));
+        field.setBackground(Color.WHITE);
+        field.setCaretColor(Color.DARK_GRAY);
+        field.setOpaque(true);
+
+        // Add focus listener to repaint the component on focus change
+        field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                field.repaint();  // Repaint on focus gain to remove placeholder
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                field.repaint();  // Repaint on focus lost to show placeholder if needed
+            }
+        });
+
+        return field;
+    }
+
+
+    private JPasswordField createModernPasswordField() {
+        JPasswordField field = new JPasswordField() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                if (getPassword().length == 0 && !isFocusOwner()) {
+                    Graphics2D g2 = (Graphics2D) g;
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    g2.setColor(Color.GRAY);  // Placeholder color
+                    g2.drawString("Enter your password", 10, 20);  // Custom placeholder text
+                }
+            }
+        };
+
+        field.setFont(new Font("Arial", Font.PLAIN, 16));
+        field.setForeground(Color.BLACK);
+        field.setBorder(new RoundedBorder(10));
+        field.setBackground(Color.WHITE);  // Password field background
+        field.setCaretColor(Color.DARK_GRAY);  // Caret color
+        field.setOpaque(true);
+
+        // Add focus listener for focus effects
+        field.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                field.setBorder(BorderFactory.createLineBorder(focusColor, 2));  // Green focus border
+                field.repaint();
+            }
+
+            @Override
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                field.setBorder(new RoundedBorder(10));  // Reset border when focus is lost
+                field.repaint();
+            }
+        });
+
+        return field;
+    }
+
+
+    private JButton createStyledButton(String text, Color bgColor) {
+        JButton button = new JButton(text) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                if (getModel().isArmed()) {
+                    g.setColor(bgColor.darker());
+                } else {
+                    g.setColor(bgColor);
+                }
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, 25, 25);
+                super.paintComponent(g);
+            }
+        };
+        button.setForeground(Color.WHITE);
+        button.setFont(new Font("Arial", Font.BOLD, 16));
+        button.setContentAreaFilled(false);
+        button.setBorderPainted(false);
+        button.setFocusPainted(false);
+        button.setOpaque(false);
+        return button;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == submitButton) {
@@ -171,9 +248,9 @@ public class signup extends JFrame implements ActionListener {
             else{
                 try {
                     new dbconnect();
-                    Statement statement = dbconnect.statement;
+                    // Statement statement = DBConnect.statement;
                     Connection connection = dbconnect.connection;
-                    ResultSet resultset = statement.executeQuery("SELECT * FROM user");
+                    // ResultSet resultset = statement.executeQuery("SELECT * FROM user");
                     PreparedStatement pre = connection.prepareStatement(
                             "INSERT INTO user (userid, username, password, email, mobileno)VALUES (?, ?, ?, ?, ?)"
                     );
@@ -189,8 +266,10 @@ public class signup extends JFrame implements ActionListener {
                     new login();
                 }
                 catch(SQLException e1){
+                    JOptionPane.showMessageDialog(this, "Database Error: Unable to register. Please try again.");
                     e1.printStackTrace();
                 }
+
             }
         } else if (e.getSource() == resetButton) {
             namefield.setText("");
@@ -199,6 +278,13 @@ public class signup extends JFrame implements ActionListener {
             genderComboBox.setSelectedIndex(0);
             passwordfield.setText("");
             confirmfield.setText("");
+        } else if (e.getSource() == backButton) {
+            // Add logic for back button (e.g., go to previous screen)
+            dispose();
+            new login(); // Close current window
+            // new PreviousScreen(); // Uncomment and replace with actual previous screen
+        } else if (e.getSource() == closeButton) {
+            System.exit(0); // Close the application
         }
     }
 

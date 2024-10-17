@@ -25,6 +25,9 @@ public class StudentInformationPage extends JFrame {
     private Color accentColor = new Color(230, 126, 34);
     private String studentid;
     private String OwnerId = "123";
+    private JComboBox<String> instituteComboBox;
+    private List<String> allInstitutes;
+    private List<Student> allStudents;
 
     public StudentInformationPage(String studentId) {
         System.out.println("Starting StudentInformationPage constructor");
@@ -348,7 +351,7 @@ public class StudentInformationPage extends JFrame {
             JDialog popup = new JDialog(StudentInformationPage.this, "PG Details", true);
             popup.setSize(550, 500);
 
-            // Center the popup on the screen
+            // Center the popup on the screen jamdade
             popup.setLocationRelativeTo(null);
 
             JPanel contentPanel = new JPanel();
@@ -543,6 +546,8 @@ public class StudentInformationPage extends JFrame {
         }
         return students;
     }
+//    ----------------------------------------------------------------------------------------------------------------------------
+
 
     public static void main(String[] args) {
         System.out.println("Starting main method");

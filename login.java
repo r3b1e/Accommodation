@@ -78,6 +78,7 @@ public class login extends JFrame implements ActionListener {
         this.add(loginbutton);
         this.add(signupbutton);
         this.setVisible(true);
+        this.setLocationRelativeTo(null);
 
         // Set frame icon
         ImageIcon pgimage = new ImageIcon("pg.png");
