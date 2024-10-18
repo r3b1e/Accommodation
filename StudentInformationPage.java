@@ -4,17 +4,21 @@ import java.awt.event.*;
 import javax.swing.border.*;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import javax.swing.border.EmptyBorder;
 import java.awt.geom.RoundRectangle2D;
+import java.util.Set;
 
 public class StudentInformationPage extends JFrame {
-    private JPanel headerPanel, searchPanel, filterPanel, contentPanel;
-    private JScrollPane scrollPane;
+    private JPanel headerPanel, searchPanel, filterPanel;
+    private JPanel contentPanel = new JPanel(new GridBagLayout());
+    private JScrollPane scrollPane = new JScrollPane();
+
     private JTextField searchField;
     private JButton searchButton, filterButton, messageButton, profileButton, menuButton, addRequestButton;
     private JComboBox<String> locationFilter, priceFilter, roomTypeFilter;
-    private List<PGCard> pgCards;
+    private List<PGCard> pgCards = new ArrayList<>();
     private JPanel slidePanel;
     private Timer slideTimer;
     private boolean isPanelVisible = false;
@@ -28,6 +32,7 @@ public class StudentInformationPage extends JFrame {
     private JComboBox<String> instituteComboBox;
     private List<String> allInstitutes;
     private List<Student> allStudents;
+    List<Student> list = getStudents();
 
     public StudentInformationPage(String studentId) {
         System.out.println("Starting StudentInformationPage constructor");
@@ -142,14 +147,32 @@ public class StudentInformationPage extends JFrame {
                 BorderFactory.createLineBorder(primaryColor, 2),
                 BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 
+
+        // Get unique institute names
+//        List<Student> list = getStudents();
+        Set<String> institutes = new HashSet<>();
+        institutes.add(""); // Placeholder for ComboBox
+        for (Student student : list) {
+            institutes.add(student.instituteName);
+        }
+
+        // Create ComboBox for institute names with a placeholder and increase the width
+        instituteComboBox = new JComboBox<>(institutes.toArray(new String[0]));
+        instituteComboBox.setRenderer(new mypage.ComboBoxRenderer("Select Institute"));
+        instituteComboBox.setSelectedIndex(-1); // Ensure placeholder is displayed initially
+        instituteComboBox.setPreferredSize(new Dimension(250, 30)); // Set preferred width of the ComboBox
+
         searchButton = createGradientButton("Search", new Color(46, 204, 113), new Color(39, 174, 96));
         filterButton = createGradientButton("Filters", new Color(230, 126, 34), new Color(211, 84, 0));
 
-        searchPanel.add(searchField);
+//        searchPanel.add(searchField);
+        searchPanel.add(instituteComboBox);
         searchPanel.add(searchButton);
-        searchPanel.add(filterButton);
+//        searchPanel.add(filterButton);
 
         filterButton.addActionListener(e -> toggleFilterPanel());
+        searchButton.addActionListener(e -> createContentPanel());
+
     }
 
     private void createFilterPanel() {
@@ -181,18 +204,30 @@ public class StudentInformationPage extends JFrame {
 
     private void createContentPanel() {
         System.out.println("createContentPanel started");
-        contentPanel = new JPanel(new GridBagLayout());
+
+        // Clear existing cards and components from the contentPanel
+        pgCards.clear();
+        contentPanel.removeAll();
+
+        // Set up the layout and background
+        contentPanel.setLayout(new GridBagLayout());
         contentPanel.setBackground(Color.WHITE);
 
-        pgCards = new ArrayList<>();
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
 
-        // Add dummy data
-        List<Student> list = getStudents();
+        // Determine which list to use (filtered or original)
+        List<Student> filterlist;
+        String selectedInstitute = (String) instituteComboBox.getSelectedItem();
+        if (selectedInstitute == null || selectedInstitute.equals("")) {
+            filterlist = list;
+        } else {
+            filterlist = filterdate();
+        }
+
+        // Iterate over the filtered list and create PG cards
         int i = 0;
-        for (Student std : list) {
-//            System.out.println(list.size());
+        for (Student std : filterlist) {
             OwnerId = std.studentID;
             String name = std.instituteName;
             String location = std.address;
@@ -207,19 +242,39 @@ public class StudentInformationPage extends JFrame {
             String phoneNumber = std.number;
             String email = std.email;
 
+            // Create a new PGCard and add it to the list
             PGCard card = new PGCard(OwnerId, name, location, price, roomType, institute, distance, vacancy, gender, additionalAddress, aboutSelf, phoneNumber, email);
             pgCards.add(card);
 
+            // Add the card to the contentPanel using GridBagLayout
             gbc.gridx = i % 3;
             gbc.gridy = i / 3;
             contentPanel.add(card, gbc);
             i++;
         }
+        scrollPane.getVerticalScrollBar().setUnitIncrement(32);
+        // Refresh the contentPanel and scrollPane to reflect changes
+        contentPanel.revalidate();
+        contentPanel.repaint();
+        scrollPane.setViewportView(contentPanel);
+        scrollPane.revalidate();
+        scrollPane.repaint();
 
-        scrollPane = new JScrollPane(contentPanel);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         System.out.println("createContentPanel finished");
+    }
+
+
+
+    private List<Student> filterdate(){
+        String selectedInstitute = (String) instituteComboBox.getSelectedItem();
+            List<Student> filteredStudents = new ArrayList<>();
+            for (Student student : list) {
+                // Check for null instituteName before comparing
+                if (student.instituteName != null && student.instituteName.equals(selectedInstitute)) {
+                    filteredStudents.add(student);
+                }
+        }
+            return filteredStudents;
     }
 
     private void toggleFilterPanel() {
@@ -241,7 +296,7 @@ public class StudentInformationPage extends JFrame {
         slidePanel.setBorder(new EmptyBorder(20, 20, 20, 20));
         slidePanel.setPreferredSize(new Dimension(0, getHeight()));
 
-        String[] options = {"Help", "Messages", "Log Out"};
+        String[] options = {"Help", "Messages","Delete","Log In"};
         for (String option : options) {
             JButton button = createGradientButton(option, primaryColor, secondaryColor);
             button.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -262,17 +317,39 @@ public class StudentInformationPage extends JFrame {
                 break;
             case "Messages":
                 // Implement messages functionality
-                new message(studentid);
+                if(studentid == "xxxx"){
+                    JOptionPane.showMessageDialog(this, "Please Login First.", "Messages", JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    new message(studentid);
+                }
 //                JOptionPane.showMessageDialog(this, "Messages functionality to be implemented.", "Messages", JOptionPane.INFORMATION_MESSAGE);
                 break;
-            case "Log Out":
+            case "Delete":
+                if(studentid == "xxxx"){
+                    JOptionPane.showMessageDialog(this, "Please Login First.", "Messages", JOptionPane.INFORMATION_MESSAGE);
+                }
+                // Implement help functionality
+//
+//                JOptionPane.showMessageDialog(this, "Help functionality to be implemented.", "Help", JOptionPane.INFORMATION_MESSAGE);
+                else {
+                    new mypage(studentid);
+                }
+                break;
+            case "Log In":
                 // Implement logout functionality
+                if(studentid =="xxxx"){
+                    dispose();
+                    new login();
+                }
+            else{
                 int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to log out?", "Log Out", JOptionPane.YES_NO_OPTION);
                 if (confirm == JOptionPane.YES_OPTION) {
                     // Perform logout actions here
                     dispose();
                     new login(); // Assuming you have a Login class to return to the login screen
                 }
+            }
                 break;
         }
     }
@@ -348,6 +425,10 @@ public class StudentInformationPage extends JFrame {
         }
 
         private void showDetailedPopup() {
+            if(studentid == "xxxx"){
+                JOptionPane.showMessageDialog(this, "Please Login First.", "Messages", JOptionPane.INFORMATION_MESSAGE);
+            return;
+            }
             JDialog popup = new JDialog(StudentInformationPage.this, "PG Details", true);
             popup.setSize(550, 500);
 
@@ -469,8 +550,14 @@ public class StudentInformationPage extends JFrame {
         System.out.println("openAddRequestPage method called"); // Debug print
         SwingUtilities.invokeLater(() -> {
             try {
-                Addrequest addRequestPage = new Addrequest(this.studentid);
-                addRequestPage.setVisible(true);
+                if(this.studentid =="xxxx"){
+                    JOptionPane.showMessageDialog(this, "Please Login First.", "Messages", JOptionPane.INFORMATION_MESSAGE);
+
+                }
+                else {
+                    Addrequest addRequestPage = new Addrequest(this.studentid);
+                    addRequestPage.setVisible(true);
+                }
                 // Remove this line to keep StudentInformationPage open
                 // this.setVisible(false);
                 System.out.println("AddRequest page created and set visible"); // Debug print
@@ -555,7 +642,7 @@ public class StudentInformationPage extends JFrame {
         String studentId = "test123"; // Use a test student ID
         SwingUtilities.invokeLater(() -> {
             System.out.println("Creating StudentInformationPage");
-            StudentInformationPage page = new StudentInformationPage("789897");
+            StudentInformationPage page = new StudentInformationPage("xxxx");
             System.out.println("Setting StudentInformationPage visible");
             page.setVisible(true);
         });

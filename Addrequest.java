@@ -440,10 +440,12 @@ public class Addrequest extends JFrame  implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == cencelrequestButton) {
             dispose();
-            new StudentInformationPage(studentId);
+//            new StudentInformationPage(studentId);
         } else if (e.getSource() == createAccountButton) {
             if (validateInputs()) {
                 insertIntoDatabase();
+                dispose();
+            new StudentInformationPage(studentId);
             }
         }
     }
