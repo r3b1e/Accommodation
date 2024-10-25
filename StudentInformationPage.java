@@ -313,7 +313,7 @@ public class StudentInformationPage extends JFrame {
         switch (option) {
             case "Help":
                 // Implement help functionality
-                JOptionPane.showMessageDialog(this, "Help functionality to be implemented.", "Help", JOptionPane.INFORMATION_MESSAGE);
+                new HelpPage();
                 break;
             case "Messages":
                 // Implement messages functionality
@@ -414,7 +414,7 @@ public class StudentInformationPage extends JFrame {
             infoPanel.add(createInfoLabel("Location: " + location, new Color(52, 152, 219)));
             infoPanel.add(createInfoLabel("Price: " + price, new Color(46, 204, 113)));
             infoPanel.add(createInfoLabel("Room Type: " + roomType, new Color(230, 126, 34)));
-            infoPanel.add(createInfoLabel("Distance: " + distance + " km", new Color(155, 89, 182)));
+            infoPanel.add(createInfoLabel("Distance: " + distance, new Color(155, 89, 182)));
 
             JButton interestedButton = createGradientButton("Show Details", primaryColor, secondaryColor);
             interestedButton.addActionListener(e -> showDetailedPopup());

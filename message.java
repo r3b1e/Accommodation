@@ -46,7 +46,7 @@ public class message extends JFrame {
 
                 // Set dynamic text from the Interested object
                 messageLabel.setText("<html>Request " + i + "<br>Name: " + interested.NAME + "<br>Email: " + interested.EMAIL + "<br>Mobile: " + interested.MOBILE + "</html>");
-                messageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 18));  // Increased font size
+                messageLabel.setFont(new Font(Font.MONOSPACED, Font.BOLD, 15));  // Increased font size
                 messageLabel.setBackground(new Color(52, 152, 219));  // Blue background
                 messageLabel.setForeground(new Color(255, 255, 255));
                 messageLabel.setOpaque(true);  // Needed to show background color

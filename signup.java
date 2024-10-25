@@ -125,7 +125,7 @@ public class signup extends JFrame implements ActionListener {
         this.add(confirmfield);
         this.add(submitButton);
         this.add(resetButton);
-        
+
         // Center on screen
         this.setLocationRelativeTo(null);
         this.setVisible(true);
@@ -232,27 +232,35 @@ public class signup extends JFrame implements ActionListener {
         return button;
     }
 
-    @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == submitButton) {
-            String name = namefield.getText();
-            String email = emailfield.getText();
-            String mobile = mobilefield.getText();  // Get mobile number
+            String name = namefield.getText().trim();
+            String email = emailfield.getText().trim();
+            String mobile = mobilefield.getText().trim();
             String gender = (String) genderComboBox.getSelectedItem();
             String password = new String(passwordfield.getPassword());
             String confirmPassword = new String(confirmfield.getPassword());
 
-            if (name.isEmpty() || email.isEmpty() || mobile.isEmpty() || gender.equals("Select") || password.isEmpty() || !password.equals(confirmPassword)) {
-                JOptionPane.showMessageDialog(this, "Please fill in all fields correctly.");
-            }
-            else{
+            if (name.isEmpty() || !name.matches("[a-zA-Z ]{3,}")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid name with at least 3 letters.");
+            } else if (email.isEmpty() || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid email address.");
+            } else if (mobile.isEmpty() || !mobile.matches("\\d{10}")) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid 10-digit mobile number.");
+            } else if (gender.equals("Select")) {
+                JOptionPane.showMessageDialog(this, "Please select a gender.");
+            } else if (password.isEmpty() || password.length() < 8 ||
+                    !password.matches(".*[A-Z].*") || !password.matches(".*[a-z].*") ||
+                    !password.matches(".*[!@#$%^&*()].*")) {
+                JOptionPane.showMessageDialog(this, "Password must be at least 8 characters long, including an uppercase letter, a lowercase letter, and a special character.");
+            } else if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this, "Passwords do not match.");
+            } else {
                 try {
                     new dbconnect();
-                    // Statement statement = DBConnect.statement;
                     Connection connection = dbconnect.connection;
-                    // ResultSet resultset = statement.executeQuery("SELECT * FROM user");
                     PreparedStatement pre = connection.prepareStatement(
-                            "INSERT INTO user (userid, username, password, email, mobileno)VALUES (?, ?, ?, ?, ?)"
+                            "INSERT INTO user (userid, username, password, email, mobileno) VALUES (?, ?, ?, ?, ?)"
                     );
                     Random random = new Random();
                     int randomNumber = 100000 + random.nextInt(900000);
@@ -262,31 +270,29 @@ public class signup extends JFrame implements ActionListener {
                     pre.setString(4, email);
                     pre.setString(5, mobile);
                     pre.executeUpdate();
+                    JOptionPane.showMessageDialog(this, "Registration successful!");
                     dispose();
                     new login();
-                }
-                catch(SQLException e1){
+                } catch (SQLException e1) {
                     JOptionPane.showMessageDialog(this, "Database Error: Unable to register. Please try again.");
                     e1.printStackTrace();
                 }
-
             }
         } else if (e.getSource() == resetButton) {
             namefield.setText("");
             emailfield.setText("");
-            mobilefield.setText("");  // Clear mobile field
+            mobilefield.setText("");
             genderComboBox.setSelectedIndex(0);
             passwordfield.setText("");
             confirmfield.setText("");
         } else if (e.getSource() == backButton) {
-            // Add logic for back button (e.g., go to previous screen)
             dispose();
-            new login(); // Close current window
-            // new PreviousScreen(); // Uncomment and replace with actual previous screen
+            new login();
         } else if (e.getSource() == closeButton) {
-            System.exit(0); // Close the application
+            System.exit(0);
         }
     }
+
 
     public static void main(String[] args) {
         new signup();
